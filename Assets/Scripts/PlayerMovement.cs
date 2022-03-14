@@ -18,7 +18,7 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     private Rigidbody2D body;
     private BoxCollider2D selfCollider;
-    private SpriteRenderer spriteRenderer;
+    private Animator animator;
 
     private bool IsFacingLeft = false;
     private float HorizontalInput;
@@ -27,29 +27,35 @@ public class PlayerMovement : MonoBehaviour
     {
         body = GetComponent<Rigidbody2D>();
         selfCollider = GetComponent<BoxCollider2D>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
     }
 
     private void Update()
     {
         HorizontalInput = Input.GetAxis("Horizontal");
-        body.velocity = new Vector2(HorizontalInput * Speed, body.velocity.y);
 
+        body.velocity = new Vector2(HorizontalInput * Speed, body.velocity.y);
+        
         MonitorFlip();
 
         if (Input.GetKeyDown(KeyCode.Space) && selfCollider.IsTouching(Ground.GetComponent<BoxCollider2D>()))
         {
             body.velocity = new Vector2(body.velocity.x, Speed);
         }
+
+
+        animator.SetBool("run", HorizontalInput != 0);
+        Debug.Log("Input " + HorizontalInput + ", Running : " + animator.GetBool("run"));
+
     }
 
     void MonitorFlip()
     {
-        
+
         if ((HorizontalInput < -0.01f && !IsFacingLeft) || (HorizontalInput > 0.01f && IsFacingLeft))
         {
             Vector2 scale = transform.localScale;
-            scale.x *=  -1;
+            scale.x *= -1;
             transform.localScale = scale;
             IsFacingLeft = !IsFacingLeft;
         }
